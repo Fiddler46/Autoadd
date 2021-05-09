@@ -1,0 +1,22 @@
+{
+  "name": "autoadd",
+  "version": "1.0.0",
+  "description": "Automatically adds songs to a preferred playlist on Spotify",
+  "main": "autoadd.js",
+  "type": "module",
+  "scripts": {
+    "start": "node autoadd.js",
+    "dev": "nodemon autoadd.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fiddler46/Autoadd.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fiddler46/Autoadd/issues"
+  },
+  "homepage": "https://github.com/Fiddler46/Autoadd#readme"
+}
