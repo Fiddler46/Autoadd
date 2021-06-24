@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = Express();
@@ -14,6 +15,7 @@ const port = 3030;
 // CLIENT_SECRET stored in Config Vars
 const apiUrl = "https://accounts.spotify.com/api/token"; // Spotify Web API URL
 const client_id = '467fab359c114e719ecefafd6af299e5'; // Client id
+const client_secret = '7c35b9d3886e48b48e5537cf7c7d1685' // temp client secret
 const redirect_uri = 'http://localhost:3030/callback/'; // Callback URL
 
 const scope = [
@@ -24,6 +26,9 @@ const scope = [
     'playlist-modify-public',
     'playlist-modify-private'
 ];
+
+
+
 
 
 /**
@@ -42,9 +47,13 @@ const scope = [
   };
   
   let stateKey = 'spotify_auth_state';
+
+  app.get('/', function(req, res){
+    res.redirect('/login');
+
+  });
   
-  
-  app.use(Express.static(__dirname + '/public'))
+  app.use(Express.static(__dirname + '/index.html'))
      .use(cors())
      .use(cookieParser());
   
