@@ -21,12 +21,12 @@ const redirect_uri = 'http://localhost:3030/callback/'; // Callback URL
 
 let AT, RT; // Stores access and refresh tokens
 const scope = [
-    'user-read-private', 
-    'user-read-email',
-    'user-library-read',
-    'playlist-read-private',
-    'playlist-modify-public',
-    'playlist-modify-private'
+  'user-read-private',
+  'user-read-email',
+  'user-library-read',
+  'playlist-read-private',
+  'playlist-modify-public',
+  'playlist-modify-private'
 ];
 
 
@@ -35,32 +35,32 @@ const scope = [
  * @param  {number} length The length of the string
  * @return {string} The generated string
  */
- let generateRandomString = function(length) {
-    let text = '';
-    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  
-    for (let i = 0; i < length; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-  };
-  
-  let stateKey = 'spotify_auth_state';
+let generateRandomString = function (length) {
+  let text = '';
+  let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+};
+
+let stateKey = 'spotify_auth_state';
 
 
-  app.get('/', function(req, res){
-    res.sendFile(__dirname + "/index.html");
-    res.redirect('/login');
-  });
-  
-   app.use(Express.static(__dirname + '/index.html'))
-     .use(cors())
-     .use(cookieParser());
+app.get('/', function (req, res) {
+  res.sendFile(__dirname + "/index.html");
+  res.redirect('/login');
+});
 
-  app.get('/login', function(req, res) {
-  
-    let state = generateRandomString(16);
-    res.cookie(stateKey, state);
+app.use(Express.static(__dirname + '/index.html'))
+  .use(cors())
+  .use(cookieParser());
+
+app.get('/login', function (req, res) {
+
+  let state = generateRandomString(16);
+  res.cookie(stateKey, state);
 
   //  app requests authorization
   res.redirect('https://accounts.spotify.com/authorize?' +
@@ -73,84 +73,104 @@ const scope = [
     }));
 });
 
-app.get('/callback', function(req, res) {
+app.get('/callback', function (req, res) {
 
-    // app requests refresh and access tokens
-    // after checking the state parameter
-  
-    let code = req.query.code || null;
-    let state = req.query.state || null;
-    let storedState = req.cookies ? req.cookies[stateKey] : null;
+  // app requests refresh and access tokens
+  // after checking the state parameter
+
+  let code = req.query.code || null;
+  let state = req.query.state || null;
+  let storedState = req.cookies ? req.cookies[stateKey] : null;
 
   //  console.log(state);
   //  console.log(storedState);
-  
-    if (state === null || state !== storedState) {
-      res.redirect('/#' +
-        querystring.stringify({
-          error: 'state_mismatch'
-        }));
-    } else {
-      res.clearCookie(stateKey);
-      let authOptions = {
-        url: 'https://accounts.spotify.com/api/token',
-        form: {
-          code: code,
-          redirect_uri: redirect_uri,
-          grant_type: 'authorization_code'
-        },
-        headers: {
-          'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
-        },
-        json: true
-      };
 
-  
-      request.post(authOptions, function(error, response, body) {
-        if (!error && response.statusCode === 200) {
-  
-           AT = body.access_token;
-           RT = body.refresh_token;
-  
-          let options = {
-            url: 'https://api.spotify.com/v1/me',
-            headers: { 'Authorization': 'Bearer ' + AT },
-            json: true
-          };
-      
-        }
-      });
-    }
-  });
- 
-
-  setInterval(() => {
-    if(RT){
-
+  if (state === null || state !== storedState) {
+    res.redirect('/#' +
+      querystring.stringify({
+        error: 'state_mismatch'
+      }));
+  } else {
+    res.clearCookie(stateKey);
     let authOptions = {
       url: 'https://accounts.spotify.com/api/token',
-      headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
       form: {
-        grant_type: 'refresh_token',
-        refresh_token: RT
+        code: code,
+        redirect_uri: redirect_uri,
+        grant_type: 'authorization_code'
+      },
+      headers: {
+        'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64'))
       },
       json: true
     };
-   
-     request.post(authOptions, function(error, response, body) {
-      if(error || response.statusCode !== 200){
-        console.error(error);
-        return;      
-      }
+
+
+    request.post(authOptions, function (error, response, body) {
+      if (!error && response.statusCode === 200) {
+
+        console.log(body);
+
         AT = body.access_token;
-        if(body.refresh_token){
-          RT = body.refresh_token;
-        }
-        console.log("Access Token refreshed!");
-      
+        RT = body.refresh_token;
+
+        let options = {
+          url: 'https://api.spotify.com/v1/me',
+          headers: { 'Authorization': 'Bearer ' + AT },
+          json: true
+        };
+
+        interval = setInterval(requestToken, body.expires_in * 1000 * 0.70);
+
+        previousExpires = body.expires_in;
+
+        res.send("Logged in!");
+      }
     });
   }
-  }, 10000);
+});
+
+
+
+let interval;
+let previousExpires = 0;
+
+const requestToken = () => {
+
+  const authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    headers: { 'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64')) },
+    form: {
+      grant_type: 'refresh_token',
+      refresh_token: RT
+    },
+    json: true
+  };
+
+  request.post(authOptions, function (error, response, body) {
+    if (error || response.statusCode !== 200) {
+      console.error(error);
+      return;
+    }
+
+    AT = body.access_token;
+
+    if (body.refresh_token) {
+      RT = body.refresh_token;
+    }
+
+    console.log("Access Token refreshed!");
+
+    if (previousExpires != body.expires_in) {
+
+      clearInterval(interval);
+
+      interval = setInterval(requestToken, body.expires_in * 1000 * 0.70);
+
+      previousExpires = body.expires_in;
+    }
+  });
+}
 
 
 
@@ -160,7 +180,7 @@ app.get('/callback', function(req, res) {
 
 
 
-  // Write code for app here
+// Write code for app here
 app.listen(port, () => console.log(`Listening on port: ${port}`));
 
 
