@@ -175,12 +175,89 @@ const requestToken = () => {
 
 
 
-
-
-
-
-
 // Write code for app here
+// Function to get the user's library tracks
+const getUserLibraryTracks = () => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: 'https://api.spotify.com/v1/me/tracks',
+      headers: { 'Authorization': 'Bearer ' + AT },
+      json: true
+    };
+
+    request.get(options, (error, response, body) => {
+      if (error || response.statusCode !== 200) {
+        reject(error || new Error('Failed to get user library tracks'));
+      } else {
+        resolve(body.items.map(item => item.track));
+      }
+    });
+  });
+};
+
+// Function to get the tracks in a playlist
+const getPlaylistTracks = (playlistId) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      headers: { 'Authorization': 'Bearer ' + AT },
+      json: true
+    };
+
+    request.get(options, (error, response, body) => {
+      if (error || response.statusCode !== 200) {
+        reject(error || new Error('Failed to get playlist tracks'));
+      } else {
+        resolve(body.items.map(item => item.track));
+      }
+    });
+  });
+};
+
+// Function to add tracks to a playlist
+const addTracksToPlaylist = (playlistId, trackIds) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      headers: { 'Authorization': 'Bearer ' + AT },
+      json: true,
+      body: { uris: trackIds }
+    };
+
+    request.post(options, (error, response, body) => {
+      if (error || response.statusCode !== 201) {
+        reject(error || new Error('Failed to add tracks to playlist'));
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+// Function to update the playlist with new tracks
+const updatePlaylist = async (playlistId) => {
+  try {
+    const libraryTracks = await getUserLibraryTracks();
+    const playlistTracks = await getPlaylistTracks(playlistId);
+
+    const trackIdsToAdd = libraryTracks
+      .filter(track => !playlistTracks.some(playlistTrack => playlistTrack.id === track.id))
+      .map(track => track.uri);
+
+    await addTracksToPlaylist(playlistId, trackIdsToAdd);
+
+    console.log('Playlist updated successfully');
+  } catch (error) {
+    console.error('Failed to update playlist:', error);
+  }
+};
+
+// Call the updatePlaylist function to update the playlist
+updatePlaylist('your_playlist_id_here');
+
+// ...
+
+
 app.listen(port, () => console.log(`Listening on port: ${port}`));
 
 
