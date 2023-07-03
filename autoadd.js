@@ -255,9 +255,6 @@ const updatePlaylist = async (playlistId) => {
 // Call the updatePlaylist function to update the playlist
 updatePlaylist('your_playlist_id_here');
 
-// ...
-
-
 app.listen(port, () => console.log(`Listening on port: ${port}`));
 
 
