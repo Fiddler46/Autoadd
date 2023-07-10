@@ -129,7 +129,35 @@ const updatePlaylistTracks = async (my_tracks, previous_tracks, token) => {
       return Promise.reject(err)
   }
 };
-
+const getMyTracks = async (token) => {
+  try {
+      const tracks = [];
+      const resp = await axios.get(
+          url = 'https://api.spotify.com/v1/me/tracks',
+          config = {
+              headers: {
+                  'Accept-Encoding': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+              }
+          }
+      );
+      for(const item of resp.data.items) {
+          if(item.track?.name != null) {
+              tracks.push({
+                  name: item.track.name,
+                  external_urls: item.track.external_urls.spotify,
+                  uri: item.track.uri,
+                  new: false,
+                  added_at: item.added_at
+              })
+          }
+      }
+      return Promise.resolve(tracks)
+  } catch (err) {
+      console.error(err)
+      return Promise.reject(err)
+  }
+};
 // Call the updatePlaylist function to update the playlist
 // updatePlaylist('71g02Ko1X9HBis6aK4B3K6'); playlistid
 
