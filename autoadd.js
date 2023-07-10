@@ -6,17 +6,16 @@ const app = express()
 app.use(cors())
 
 // const __dirname = dirname(fileURLToPath(import.meta.url));
-const port = 3030;
+PORT = 3030;
 
-// CLIENT_SECRET stored in Config Vars
 // const apiUrl = "https://accounts.spotify.com/api/token"; // Spotify Web API URL
-const client_id = 'insert your client id here'; // Client id
-const client_secret = 'insert your client secret here' // temp client secret
+CLIENT_ID = 'insert your client id here'; // Client id
+CLIENT_SECRET = 'insert your client secret here' // temp client secret
 // const client_secret = process.env.CLIENT_SECRET;
-const redirect_uri = 'http://localhost:3030/callback/'; // Callback URL
+REDIRECT_URI = `http://localhost:${PORT}/callback`  // Callback URL
 
 let AT, RT; // Stores access and refresh tokens
-const scope = [
+SCOPE = [
   'user-read-private',
   'user-read-email',
   'user-library-read',
@@ -77,6 +76,35 @@ const addSongs = async (playlist_id, tracks, token) => {
       return Promise.reject(err)
   }
 }
+
+const getPlaylistTracks = async (playlist, token) => {
+  try {
+      const tracks = [];
+      const resp = await axios.get(
+          url = `https://api.spotify.com/v1/playlists/${playlist}`,
+          config = {
+              headers: {
+                  'Accept-Encoding': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+              }
+          }
+      );
+      for(const item of resp.data.tracks.items) {
+          if (item.track?.name != null) {
+              tracks.push({
+                  name: item.track.name,
+                  external_urls: item.track.external_urls.spotify,
+                  uri: item.track.uri,
+                  new: false
+              })
+          }
+      }
+      return Promise.resolve(tracks)
+  } catch (err) {
+      console.error(err)
+      return Promise.reject(err)
+  }
+};
 
 // Call the updatePlaylist function to update the playlist
 // updatePlaylist('71g02Ko1X9HBis6aK4B3K6'); playlistid
