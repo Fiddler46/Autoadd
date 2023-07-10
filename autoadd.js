@@ -116,6 +116,20 @@ const update_track = (arr, track) => {
   return arr;
 }
 
+const updatePlaylistTracks = async (my_tracks, previous_tracks, token) => {
+  try {
+      new_tracks = previous_tracks.map(a => Object.assign({}, a));
+      // update new playlist with my_tracks and previous_tracks
+      for(const track of my_tracks) {
+          new_tracks = update_track(new_tracks, track)
+      }
+      return Promise.resolve(new_tracks)
+  } catch (err) {
+      console.error(err)
+      return Promise.reject(err)
+  }
+};
+
 // Call the updatePlaylist function to update the playlist
 // updatePlaylist('71g02Ko1X9HBis6aK4B3K6'); playlistid
 
