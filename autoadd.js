@@ -158,6 +158,34 @@ const getMyTracks = async (token) => {
       return Promise.reject(err)
   }
 };
+
+app.get("/login", (request, response) => {
+  const redirect_url = `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${SCOPE}&state=123456&redirect_uri=${REDIRECT_URI}&prompt=consent`
+  response.redirect(redirect_url);
+});
+
+app.get("/callback", async (request, response) => {
+  const code = request.query["code"]
+  getToken(code)
+      .then(access_token => {
+          getMyTracks(access_token)
+              .then(my_tracks => {
+                  getPlaylistTracks(PLAY_LIST_ID, access_token)
+                      .then(previous_tracks => {
+                          updatePlaylistTracks(my_tracks, previous_tracks, access_token)
+                              .then(new_tracks => {
+                                  addSongs(playlist, new_tracks, access_token)
+                                      .then(songs => {
+                                          return response.send({ 'my tracks': my_tracks , 'previous playlist': previous_tracks, 'new playlist': new_tracks, 'songs': songs });
+                                      })
+                              })
+                      })
+              })
+      })
+      .catch(error => {
+          console.log(error.message);
+      })
+})
 // Call the updatePlaylist function to update the playlist
 // updatePlaylist('71g02Ko1X9HBis6aK4B3K6'); playlistid
 
