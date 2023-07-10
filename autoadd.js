@@ -106,6 +106,16 @@ const getPlaylistTracks = async (playlist, token) => {
   }
 };
 
+const update_track = (arr, track) => {
+  const { length } = arr;
+  const id = length + 1;
+  const found = arr.some(el => el.external_urls === track.external_urls);
+  if (!found) {
+      arr.push({ name : track.name, external_urls: track.external_urls, uri: track.uri, new: true })
+  };
+  return arr;
+}
+
 // Call the updatePlaylist function to update the playlist
 // updatePlaylist('71g02Ko1X9HBis6aK4B3K6'); playlistid
 
