@@ -25,6 +25,31 @@ const scope = [
   'playlist-modify-private'
 ];
 
+const playlist_id = '71g02Ko1X9HBis6aK4B3K6';
+const getToken = async (code) => {
+  try {
+      const resp = await axios.post(
+          url = 'https://accounts.spotify.com/api/token',
+          data = new URLSearchParams({
+              'grant_type': 'authorization_code',
+              'redirect_uri': REDIRECT_URI,
+              'code': code
+          }),
+          config = {
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              auth: {
+                  username: CLIENT_ID,
+                  password: CLIENT_SECRET
+              }
+          })
+      return Promise.resolve(resp.data.access_token);
+  } catch (err) {
+      console.error(err)
+      return Promise.reject(err)
+  }
+}
 
 // Call the updatePlaylist function to update the playlist
 // updatePlaylist('71g02Ko1X9HBis6aK4B3K6'); playlistid
