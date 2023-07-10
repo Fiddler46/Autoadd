@@ -51,6 +51,33 @@ const getToken = async (code) => {
   }
 }
 
+const addSongs = async (playlist_id, tracks, token) => {
+  try {
+      const uris = []
+      for(const track of tracks) {
+          if (track.new) {
+              uris.push(track.uri)
+          }
+      }
+
+      const resp = await axios.post(
+          url = `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
+          data = {
+              'uris': uris
+          },
+          config = {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+              }
+          })
+      return Promise.resolve(resp.data);
+  } catch (err) {
+      console.error(err)
+      return Promise.reject(err)
+  }
+}
+
 // Call the updatePlaylist function to update the playlist
 // updatePlaylist('71g02Ko1X9HBis6aK4B3K6'); playlistid
 
