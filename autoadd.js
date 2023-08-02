@@ -6,10 +6,11 @@ const app = express()
 app.use(cors())
 
 CLIENT_ID = "client_id";
-CLIENT_SECRET = "client_secret";
+// CLIENT_SECRET = "client_secret";
 PORT = 3030 // it is located in Spotify dashboard's Redirect URIs
-REDIRECT_URI = `http://localhost:${PORT}/callback`;
-PLAYLIST_ID = "playlist_id";
+// REDIRECT_URI = `http://localhost:${PORT}/callback`;
+REDIRECT_URI = `https://autoadd.vercel.app/`;
+// PLAYLIST_ID = "playlist_id";
 SCOPE = [
     'user-read-private',
     'user-read-email',
