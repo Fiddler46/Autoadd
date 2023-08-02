@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express()
 app.use(cors())
 
-CLIENT_ID = "client_id";
+CLIENT_ID = "467fab359c114e719ecefafd6af299e5";
 // CLIENT_SECRET = "client_secret";
 PORT = 3030 // it is located in Spotify dashboard's Redirect URIs
 // REDIRECT_URI = `http://localhost:${PORT}/callback`;
