@@ -9,7 +9,7 @@ CLIENT_ID = "467fab359c114e719ecefafd6af299e5";
 // CLIENT_SECRET = "client_secret";
 PORT = 3030 // it is located in Spotify dashboard's Redirect URIs
 // REDIRECT_URI = `http://localhost:${PORT}/callback`;
-REDIRECT_URI = `https://autoadd.vercel.app/`;
+REDIRECT_URI = `https://autoadd.vercel.app/callback`;
 // PLAYLIST_ID = "playlist_id";
 SCOPE = [
     'user-read-private',
