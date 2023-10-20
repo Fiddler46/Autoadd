@@ -4,13 +4,13 @@ const cors = require("cors");
 
 const app = express()
 app.use(cors())
+app.set('view engine', 'ejs');
 
 CLIENT_ID = "467fab359c114e719ecefafd6af299e5";
 // CLIENT_SECRET = "client_secret";
 PORT = 3030 // it is located in Spotify dashboard's Redirect URIs
-// REDIRECT_URI = `http://localhost:${PORT}/callback`;
-REDIRECT_URI = `https://autoadd.vercel.app/callback`;
-// PLAYLIST_ID = "playlist_id";
+REDIRECT_URI = `http://localhost:${PORT}/callback`;
+// REDIRECT_URI = `https://autoadd.vercel.app/callback`;
 SCOPE = [
     'user-read-private',
     'user-read-email',
@@ -74,7 +74,7 @@ const addSongs = async (playlist_id, tracks, token) => {
         console.error(err)
         return Promise.reject(err)
     }
-}
+} 
 
 const getPlaylistTracks = async (playlist, token) => {
     try {
@@ -183,6 +183,10 @@ const getMyTracks = async (token) => {
         return Promise.reject(err)
     }
 }
+
+app.get('/', (req, res) => {
+    res.render('index', {title: 'Autoadd'});
+});
 
 app.get("/login", (request, response) => {
     const redirect_url = `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${SCOPE}&state=123456&redirect_uri=${REDIRECT_URI}&prompt=consent`
