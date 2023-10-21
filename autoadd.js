@@ -1,16 +1,18 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.set("view engine", "ejs");
 
 CLIENT_ID = "467fab359c114e719ecefafd6af299e5";
-// CLIENT_SECRET = "client_secret";
+client_secret = process.env.CLIENT_SECRET;
+playlist_id = process.env.PLAYLIST_ID;
 PORT = 3030; // it is located in Spotify dashboard's Redirect URIs
-REDIRECT_URI = `http://localhost:${PORT}/callback`;
-// REDIRECT_URI = `https://autoadd.vercel.app/callback`;
+// REDIRECT_URI = `http://localhost:${PORT}/callback`;
+REDIRECT_URI = `https://autoadd.vercel.app/callback`;
 SCOPE = [
   "user-read-private",
   "user-read-email",
@@ -35,7 +37,7 @@ const getToken = async (code) => {
         },
         auth: {
           username: CLIENT_ID,
-          password: CLIENT_SECRET,
+          password: client_secret,
         },
       })
     );
@@ -208,7 +210,7 @@ app.get("/callback", async (request, response) => {
         getPlaylistTracks(PLAYLIST_ID, access_token).then((previous_tracks) => {
           updatePlaylistTracks(my_tracks, previous_tracks, access_token).then(
             (new_tracks) => {
-              addSongs(PLAYLIST_ID, new_tracks, access_token).then((OK) => {
+              addSongs(playlist_id, new_tracks, access_token).then((OK) => {
                 return response.send({
                   "my tracks Total:": my_tracks.length,
                   "my tracks": my_tracks,
