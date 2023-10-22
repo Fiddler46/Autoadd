@@ -234,3 +234,5 @@ app.get("/callback", async (request, response) => {
 app.listen(PORT, () => {
   console.log(`Listening on :${PORT}`);
 });
+
+module.exports = app;
