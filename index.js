@@ -207,7 +207,7 @@ app.get("/callback", async (request, response) => {
   getToken(code)
     .then((access_token) => {
       getMyTracks(access_token).then((my_tracks) => {
-        getPlaylistTracks(PLAYLIST_ID, access_token).then((previous_tracks) => {
+        getPlaylistTracks(playlist_id, access_token).then((previous_tracks) => {
           updatePlaylistTracks(my_tracks, previous_tracks, access_token).then(
             (new_tracks) => {
               addSongs(playlist_id, new_tracks, access_token).then((OK) => {
