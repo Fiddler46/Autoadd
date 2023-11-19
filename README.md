@@ -30,3 +30,13 @@ node index.js
 ```
 
 Now, simply login with your account after pressing the button and the app will parse through your library to add the songs!
+
+# Planned Features
+These are subject to change based on what I fancy, feel free to open an issue and add your suggestions.
+
+- Migration to cron job workflow
+    **Timeline**: Realtively soon
+
+- Front-end for dynamic usage
+    **Timeline**: Further off
+    Would require an overhaul of the app to include a front-end portion to work with the backend to dynamically add the playlist id. May not be suited to cron-job workflow if that is the case, may consider it as a separate branch.
